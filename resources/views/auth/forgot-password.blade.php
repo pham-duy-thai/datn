@@ -8,7 +8,7 @@
         @csrf
 
         <h3 class="auth-title">Khôi phục tài khoản</h3>
-        <p class="auth-subtitle">Nhập Gmail đăng ký để nhận liên kết đặt lại mật khẩu.</p>
+        <p class="auth-subtitle">Nhập Gmail đăng ký để nhận mã xác nhận đặt lại mật khẩu.</p>
 
         <div class="form-group">
             <label for="email">Gmail đăng ký</label>
@@ -16,7 +16,7 @@
         </div>
 
         <div class="form-group">
-            <button class="form-control btn btn-primary submit px-3" type="submit">Gửi liên kết</button>
+            <button class="form-control btn btn-primary submit px-3" type="submit">Gửi mã</button>
         </div>
 
         <p class="auth-bottom-link">

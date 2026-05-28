@@ -326,8 +326,55 @@ main {
 }
 
 .doctor-card {
+    position: relative;
     display: grid;
     gap: 16px;
+    overflow: hidden;
+    outline: none;
+}
+
+.doctor-hover-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    align-content: center;
+    gap: 10px;
+    padding: 26px;
+    pointer-events: none;
+    background: rgba(38, 151, 145, 0.92);
+    color: #ffffff;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity .22s ease, transform .22s ease;
+}
+
+.doctor-card:hover .doctor-hover-panel,
+.doctor-card:focus-within .doctor-hover-panel,
+.doctor-card:focus .doctor-hover-panel {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.doctor-hover-panel span {
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.doctor-hover-panel strong {
+    color: #ffbf75;
+    font-size: 22px;
+    line-height: 1.25;
+}
+
+.doctor-hover-panel p {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.6;
 }
 
 .doctor-avatar {
@@ -747,6 +794,57 @@ textarea:focus {
     align-items: start;
 }
 
+.account-password-panel {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 18px;
+    align-items: end;
+    border-color: #99f6e4;
+    background: #f0fdfa;
+}
+
+.account-password-panel h2 {
+    margin-top: 4px;
+}
+
+.account-password-panel p {
+    max-width: 680px;
+}
+
+.account-password-form {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    gap: 12px;
+    align-items: end;
+}
+
+.account-password-form label {
+    display: grid;
+    gap: 7px;
+    margin: 0;
+}
+
+.account-password-form label span {
+    color: var(--front-text);
+    font-weight: 700;
+}
+
+.account-password-form input {
+    width: 100%;
+    min-height: 46px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    color: var(--front-text);
+    padding: 10px 12px;
+}
+
+.account-password-actions .button,
+.account-skip-password {
+    min-height: 46px;
+}
+
 .account-profile-panel {
     display: grid;
     gap: 22px;
@@ -1058,6 +1156,11 @@ textarea:focus {
     .appointment-layout {
         display: grid;
         gap: 24px;
+    }
+
+    .account-password-panel,
+    .account-password-form {
+        grid-template-columns: 1fr;
     }
 
     .appointment-doctor-visual {

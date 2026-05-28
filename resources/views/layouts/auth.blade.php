@@ -10,7 +10,6 @@
         <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}">
         <link rel="stylesheet" href="{{ asset('asset/css/style.css') }}">
         <link rel="stylesheet" href="{{ asset('css/auth-template.css') }}">
-        <link rel="stylesheet" href="{{ asset('css/chatbot.css') }}">
     </head>
     <body class="img js-fullheight auth-template-body" style="background-image: url('{{ asset('asset/images/bg.jpg') }}');">
         <section class="ftco-section">
@@ -59,8 +58,6 @@
                 </div>
             </div>
         </section>
-
-        @include('partials.chatbot')
 
         <script src="{{ asset('asset/js/jquery.min.js') }}"></script>
         <script src="{{ asset('asset/js/popper.js') }}"></script>

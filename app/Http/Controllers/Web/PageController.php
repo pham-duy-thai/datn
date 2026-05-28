@@ -16,7 +16,9 @@ use App\Services\PaymentGatewayService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class PageController extends Controller
@@ -40,6 +42,40 @@ class PageController extends Controller
         ]);
 
         return view('pages.account.show', ['user' => $user]);
+    }
+
+    public function updatePassword(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'current_password' => ['required', 'string'],
+            'password' => ['required', 'string', 'min:6', 'confirmed'],
+        ]);
+
+        if (! Hash::check($data['current_password'], $request->user()->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => 'Mật khẩu hiện tại không đúng.',
+            ]);
+        }
+
+        $request->user()->forceFill([
+            'password' => Hash::make($data['password']),
+            'must_change_password' => false,
+        ])->save();
+
+        return redirect()
+            ->route('account.show')
+            ->with('success', 'Đã cập nhật mật khẩu mới.');
+    }
+
+    public function skipPasswordChange(Request $request): RedirectResponse
+    {
+        $request->user()->forceFill([
+            'must_change_password' => false,
+        ])->save();
+
+        return redirect()
+            ->route('account.show')
+            ->with('success', 'Bạn đã bỏ qua bước đổi mật khẩu.');
     }
 
     public function departments(Request $request): View

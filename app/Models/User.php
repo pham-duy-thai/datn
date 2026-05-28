@@ -25,6 +25,7 @@ class User extends Authenticatable
         'address',
         'avatar',
         'password',
+        'must_change_password',
         'api_token',
     ];
 
@@ -70,6 +71,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'date_of_birth' => 'date',
             'password' => 'hashed',
+            'must_change_password' => 'boolean',
         ];
     }
 }

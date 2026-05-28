@@ -103,6 +103,13 @@
     font-weight: 700;
 }
 
+.auth-code-input {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 8px;
+}
+
 @media (max-width: 576px) {
     .ftco-section {
         padding: 4em 0;

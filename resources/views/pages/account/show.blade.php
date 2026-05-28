@@ -35,6 +35,45 @@
 
     <section class="section">
         <div class="container account-layout">
+            @if (session('password_change_prompt') || $user->must_change_password)
+                <article class="content-panel account-password-panel">
+                    <div>
+                        <span class="section-kicker">Bảo mật</span>
+                        <h2>Đổi mật khẩu</h2>
+                        <p>{{ session('password_change_prompt', 'Bạn có thể đổi mật khẩu mới hoặc bỏ qua bước này.') }}</p>
+                    </div>
+
+                    <form class="account-password-form" method="POST" action="{{ route('account.password.update') }}">
+                        @csrf
+                        @method('PATCH')
+
+                        <label>
+                            <span>Mật khẩu hiện tại</span>
+                            <input type="password" name="current_password" autocomplete="current-password" required>
+                        </label>
+
+                        <label>
+                            <span>Mật khẩu mới</span>
+                            <input type="password" name="password" autocomplete="new-password" required>
+                        </label>
+
+                        <label>
+                            <span>Nhập lại mật khẩu mới</span>
+                            <input type="password" name="password_confirmation" autocomplete="new-password" required>
+                        </label>
+
+                        <div class="account-password-actions">
+                            <button class="button button-primary" type="submit">Đổi mật khẩu</button>
+                        </div>
+                    </form>
+
+                    <form method="POST" action="{{ route('account.password.skip') }}">
+                        @csrf
+                        <button class="button button-secondary account-skip-password" type="submit">Bỏ qua</button>
+                    </form>
+                </article>
+            @endif
+
             <article class="content-panel account-profile-panel">
                 <div class="profile-card">
                     @if ($user->avatar)

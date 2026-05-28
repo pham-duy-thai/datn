@@ -76,7 +76,7 @@
                             ? $doctor->avatar
                             : $doctorImages[$loop->index % count($doctorImages)];
                     @endphp
-                    <article class="doctor-card">
+                    <article class="doctor-card" tabindex="0">
                         <div class="profile-card">
                             <img class="doctor-avatar" src="{{ asset($doctorImage) }}" alt="Ảnh bác sĩ {{ $doctor->name }}">
                             <div>
@@ -89,6 +89,12 @@
                         <div class="card-actions">
                             <a class="button button-primary" href="{{ route('appointments.create', ['doctor_id' => $doctor->id, 'service_id' => $service->id]) }}">Đặt lịch</a>
                             <a class="button button-secondary" href="{{ route('doctors.show', $doctor) }}">Chi tiết</a>
+                        </div>
+                        <div class="doctor-hover-panel" aria-hidden="true">
+                            <span>Bác sĩ</span>
+                            <strong>{{ $doctor->name }}</strong>
+                            <p>Chuyên môn: {{ $doctor->specialization ?: 'Đang cập nhật' }}</p>
+                            <p>Học vị: {{ $doctor->degree ?: 'Đang cập nhật' }}</p>
                         </div>
                     </article>
                 @empty

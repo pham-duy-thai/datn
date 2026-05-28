@@ -27,7 +27,9 @@ Route::middleware('guest')->group(function (): void {
 
     Route::get('/quen-mat-khau', [AuthController::class, 'showForgotPassword'])->name('password.request');
     Route::post('/quen-mat-khau', [AuthController::class, 'sendResetLink'])->name('password.email');
-    Route::get('/dat-lai-mat-khau/{token}', [AuthController::class, 'showResetPassword'])->name('password.reset');
+    Route::get('/xac-nhan-ma', [AuthController::class, 'showVerifyCode'])->name('password.code');
+    Route::post('/xac-nhan-ma', [AuthController::class, 'verifyResetCode'])->name('password.code.verify');
+    Route::get('/dat-lai-mat-khau', [AuthController::class, 'showResetPassword'])->name('password.reset');
     Route::post('/dat-lai-mat-khau', [AuthController::class, 'resetPassword'])->name('password.update');
 });
 
@@ -43,6 +45,8 @@ Route::get('/thanh-toan/momo/return', [PaymentController::class, 'momoReturn'])-
 Route::middleware('auth')->group(function (): void {
     Route::get('/trang-chu', [PageController::class, 'home'])->name('home');
     Route::get('/tai-khoan', [PageController::class, 'account'])->name('account.show');
+    Route::patch('/tai-khoan/mat-khau', [PageController::class, 'updatePassword'])->name('account.password.update');
+    Route::post('/tai-khoan/bo-qua-doi-mat-khau', [PageController::class, 'skipPasswordChange'])->name('account.password.skip');
     Route::get('/thanh-toan/{payment}', [PaymentController::class, 'show'])->name('payments.show');
     Route::get('/thanh-toan/{payment}/thanh-toan-lai', [PaymentController::class, 'retry'])->name('payments.retry');
 
