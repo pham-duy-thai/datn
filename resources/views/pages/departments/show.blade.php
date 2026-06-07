@@ -4,9 +4,9 @@
 
 @section('content')
     @php
-        $departmentImage = $department->image && file_exists(public_path($department->image)) ? $department->image : 'images/about-bg.jpg';
-        $doctorImages = ['images/team-image1.jpg', 'images/team-image2.jpg', 'images/team-image3.jpg'];
-        $serviceImages = ['images/appointment-image.jpg', 'images/news-image2.jpg', 'images/news-image3.jpg'];
+        $departmentImage = $department->image && file_exists(public_path($department->image)) ? $department->image : 'images/frontend/about-bg.jpg';
+        $doctorImages = ['images/frontend/team-image1.jpg', 'images/frontend/team-image2.jpg', 'images/frontend/team-image3.jpg'];
+        $serviceImages = ['images/frontend/appointment-image.jpg', 'images/frontend/news-image2.jpg', 'images/frontend/news-image3.jpg'];
     @endphp
 
     <section class="page-hero compact">

@@ -39,9 +39,22 @@ class PageController extends Controller
         $user = $request->user()->load([
             'appointments' => fn ($query) => $query->with(['doctor.department', 'service', 'payment'])->latest('appointment_date')->limit(10),
             'medicalRecords' => fn ($query) => $query->with('doctor.department')->latest('examined_at')->limit(10),
+            'medicalImages' => fn ($query) => $query->latest()->limit(8),
+            'doctor.department',
         ]);
 
-        return view('pages.account.show', ['user' => $user]);
+        $doctorRecords = $user->role === 'doctor' && $user->doctor
+            ? $user->doctor->medicalRecords()
+                ->with(['user', 'appointment.service'])
+                ->latest('examined_at')
+                ->limit(10)
+                ->get()
+            : collect();
+
+        return view('pages.account.show', [
+            'user' => $user,
+            'doctorRecords' => $doctorRecords,
+        ]);
     }
 
     public function updatePassword(Request $request): RedirectResponse

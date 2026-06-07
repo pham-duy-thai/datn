@@ -4,6 +4,8 @@ use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\AdminController;
 use App\Http\Controllers\Web\AdminCrudController;
 use App\Http\Controllers\Web\ChatbotController;
+use App\Http\Controllers\Web\MedicalAiController;
+use App\Http\Controllers\Web\MedicalImageController;
 use App\Http\Controllers\Web\PageController;
 use App\Http\Controllers\Web\PaymentController;
 use Illuminate\Support\Facades\Route;
@@ -67,7 +69,12 @@ Route::middleware('auth')->group(function (): void {
 
     Route::get('/lien-he', [PageController::class, 'contactCreate'])->name('contact.create');
     Route::post('/lien-he', [PageController::class, 'contactStore'])->name('contact.store');
+    Route::post('/anh-y-te', [MedicalImageController::class, 'store'])->name('medical-images.store');
 });
+
+Route::post('/ai-ho-tro-bac-si', MedicalAiController::class)
+    ->middleware(['auth', 'role:doctor'])
+    ->name('doctor.ai.assist');
 
 Route::middleware(['auth', 'role:admin,receptionist'])
     ->prefix('admin')
@@ -79,6 +86,7 @@ Route::middleware(['auth', 'role:admin,receptionist'])
         Route::post('/nguoi-dung', [AdminCrudController::class, 'store'])->defaults('resource', 'users')->name('users.store');
         Route::get('/nguoi-dung/{id}/sua', [AdminCrudController::class, 'edit'])->defaults('resource', 'users')->name('users.edit');
         Route::put('/nguoi-dung/{id}', [AdminCrudController::class, 'update'])->defaults('resource', 'users')->name('users.update');
+        Route::patch('/nguoi-dung/{user}/reset-mat-khau', [AdminController::class, 'resetUserPassword'])->name('users.reset-password');
         Route::delete('/nguoi-dung/{id}', [AdminCrudController::class, 'destroy'])->defaults('resource', 'users')->name('users.destroy');
         Route::get('/nguoi-dung', [AdminController::class, 'users'])->name('users.index');
 

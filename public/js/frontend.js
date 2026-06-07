@@ -32,6 +32,71 @@
 })();
 
 (function () {
+    var panel = document.querySelector('[data-medical-ai]');
+
+    if (!panel) {
+        return;
+    }
+
+    var form = panel.querySelector('[data-medical-ai-form]');
+    var result = panel.querySelector('[data-medical-ai-result]');
+    var csrf = document.querySelector('meta[name="csrf-token"]');
+
+    function showResult(text, state) {
+        result.hidden = false;
+        result.className = 'doctor-ai-result ' + (state || '');
+        result.textContent = text;
+        result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        var submit = form.querySelector('button[type="submit"]');
+        var payload = {};
+        var formData = new FormData(form);
+
+        formData.forEach(function (value, key) {
+            payload[key] = typeof value === 'string' ? value.trim() : value;
+        });
+
+        submit.disabled = true;
+        showResult('AI đang phân tích dữ liệu lâm sàng...', 'pending');
+
+        fetch(panel.dataset.aiUrl, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrf ? csrf.content : ''
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error('Không nhận được phản hồi AI.');
+                }
+
+                return response.json();
+            })
+            .then(function (payload) {
+                showResult(
+                    payload.data && payload.data.answer
+                        ? payload.data.answer
+                        : 'AI chưa tạo được gợi ý phù hợp. Bác sĩ vui lòng bổ sung dữ liệu lâm sàng.',
+                    'ready'
+                );
+            })
+            .catch(function () {
+                showResult('Hệ thống AI đang bận hoặc dữ liệu chưa hợp lệ. Bác sĩ vui lòng thử lại sau.', 'error');
+            })
+            .finally(function () {
+                submit.disabled = false;
+            });
+    });
+})();
+
+(function () {
     var widget = document.querySelector('[data-chatbot]');
 
     if (!widget) {

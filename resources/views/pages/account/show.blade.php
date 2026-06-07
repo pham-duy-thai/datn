@@ -23,6 +23,20 @@
             'completed' => 'Hoàn tất',
             'cancelled' => 'Đã hủy',
         ];
+
+        $imageStatusLabels = [
+            'pending' => 'Chờ phân tích',
+            'completed' => 'Đã phân tích',
+            'failed' => 'Lỗi phân tích',
+        ];
+
+        $modalityLabels = [
+            'xray' => 'X-quang',
+            'ct' => 'CT',
+            'mri' => 'MRI',
+            'ultrasound' => 'Siêu âm',
+            'endoscopy' => 'Nội soi',
+        ];
     @endphp
 
     <section class="page-hero compact account-hero">
@@ -117,7 +131,7 @@
             </article>
 
             <aside class="booking-callout account-actions-panel">
-                <img class="panel-image" src="{{ asset('images/about-bg.jpg') }}" alt="Ảnh tài khoản cá nhân">
+                <img class="panel-image" src="{{ asset('images/frontend/about-bg.jpg') }}" alt="Ảnh tài khoản cá nhân">
                 <span class="section-kicker">Thao tác</span>
                 <h2>Quản lý phiên đăng nhập</h2>
                 <p>Đăng xuất khi bạn dùng máy tính chung hoặc muốn chuyển sang tài khoản khác.</p>
@@ -129,6 +143,185 @@
             </aside>
         </div>
     </section>
+
+    @if ($user->role === 'doctor')
+        <section class="section doctor-ai-section">
+            <div class="container">
+                <article class="content-panel doctor-ai-panel" data-medical-ai data-ai-url="{{ route('doctor.ai.assist') }}">
+                    <div class="section-heading-row compact-row">
+                        <div>
+                            <span class="section-kicker">AI hỗ trợ bác sĩ</span>
+                            <h2>Trợ lý lâm sàng</h2>
+                            <p>AI chỉ đưa gợi ý tham khảo. Bác sĩ là người quyết định cuối cùng dựa trên thăm khám và dữ liệu đầy đủ.</p>
+                        </div>
+                    </div>
+
+                    <form class="doctor-ai-form" data-medical-ai-form>
+                        <div class="doctor-ai-mode-grid">
+                            <label>
+                                <input type="radio" name="mode" value="diagnosis" checked>
+                                <span>Gợi ý chẩn đoán</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="mode" value="summary">
+                                <span>Tóm tắt bệnh án</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="mode" value="prescription">
+                                <span>Hỗ trợ kê đơn</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="mode" value="record_draft">
+                                <span>Viết bệnh án</span>
+                            </label>
+                        </div>
+
+                        <label class="field-wide">
+                            <span>Hồ sơ bệnh án gần đây</span>
+                            <select name="record_id">
+                                <option value="">Không chọn hồ sơ</option>
+                                @foreach ($doctorRecords as $record)
+                                    <option value="{{ $record->id }}">
+                                        #{{ $record->id }} - {{ $record->user?->name ?? $record->appointment?->patient_name ?? 'Chưa rõ bệnh nhân' }}
+                                        {{ $record->examined_at ? '('.$record->examined_at->format('d/m/Y').')' : '' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </label>
+
+                        <div class="doctor-ai-grid">
+                            <label>
+                                <span>Triệu chứng</span>
+                                <textarea name="symptoms" rows="4" placeholder="Sốt 38.5, ho, đau ngực, khó thở..."></textarea>
+                            </label>
+                            <label>
+                                <span>Tiền sử bệnh</span>
+                                <textarea name="medical_history" rows="4" placeholder="Tăng huyết áp, đái tháo đường, bệnh thận..."></textarea>
+                            </label>
+                            <label>
+                                <span>Kết quả xét nghiệm</span>
+                                <textarea name="lab_results" rows="4" placeholder="BC, CRP, glucose, creatinine, X-quang..."></textarea>
+                            </label>
+                            <label>
+                                <span>Chỉ số sinh tồn</span>
+                                <textarea name="vital_signs" rows="4" placeholder="Mạch, huyết áp, nhiệt độ, SpO2, nhịp thở..."></textarea>
+                            </label>
+                            <label>
+                                <span>Dị ứng thuốc</span>
+                                <textarea name="allergies" rows="3" placeholder="Penicillin, NSAIDs..."></textarea>
+                            </label>
+                            <label>
+                                <span>Thuốc đang dùng / đơn thuốc cần kiểm tra</span>
+                                <textarea name="current_medications" rows="3" placeholder="Tên thuốc, hàm lượng, liều dùng..."></textarea>
+                            </label>
+                            <label class="field-wide">
+                                <span>Ghi chú thêm</span>
+                                <textarea name="note" rows="4" placeholder="Yêu cầu cận lâm sàng, hướng điều trị dự kiến, lời dặn..."></textarea>
+                            </label>
+                        </div>
+
+                        <div class="doctor-ai-actions">
+                            <button class="button button-primary" type="submit">Nhận gợi ý AI</button>
+                            <button class="button button-secondary" type="reset">Xóa nội dung</button>
+                        </div>
+                    </form>
+
+                    <div class="doctor-ai-result" data-medical-ai-result hidden></div>
+                </article>
+            </div>
+        </section>
+    @endif
+
+    @if ($user->role === 'patient')
+        <section class="section patient-image-ai-section">
+            <div class="container patient-image-ai-layout">
+                <article class="content-panel patient-image-upload-panel">
+                    <div class="section-heading-row compact-row">
+                        <div>
+                            <span class="section-kicker">AI ảnh y tế</span>
+                            <h2>Tải ảnh để AI đọc sơ bộ</h2>
+                            <p>AI hỗ trợ đọc ảnh y tế và giải thích bằng ngôn ngữ dễ hiểu. Kết quả chỉ để tham khảo và cần bác sĩ xác nhận.</p>
+                        </div>
+                    </div>
+
+                    <form class="patient-image-form" method="POST" action="{{ route('medical-images.store') }}" enctype="multipart/form-data">
+                        @csrf
+
+                        <div class="patient-image-grid">
+                            <label>
+                                <span>Loại ảnh</span>
+                                <select name="modality" required>
+                                    <option value="xray">X-quang</option>
+                                    <option value="ct">CT</option>
+                                    <option value="mri">MRI</option>
+                                    <option value="ultrasound">Siêu âm</option>
+                                    <option value="endoscopy">Nội soi</option>
+                                </select>
+                            </label>
+
+                            <label>
+                                <span>Vùng chụp</span>
+                                <input type="text" name="body_part" placeholder="Phổi, ngực, xương cổ tay...">
+                            </label>
+
+                            <label class="field-wide">
+                                <span>Ảnh y tế</span>
+                                <input type="file" name="image" accept="image/png,image/jpeg,image/webp" required>
+                                <small class="form-hint">Hỗ trợ JPG, PNG, WEBP. Tối đa 8MB.</small>
+                            </label>
+
+                            <label class="field-wide">
+                                <span>Ghi chú cho bác sĩ</span>
+                                <textarea name="note" rows="4" placeholder="Triệu chứng, thời gian chụp, bệnh viện chụp, vị trí đau..."></textarea>
+                            </label>
+                        </div>
+
+                        <div class="doctor-ai-actions">
+                            <button class="button button-primary" type="submit">Tải lên và đọc ảnh</button>
+                        </div>
+                    </form>
+                </article>
+
+                <article class="content-panel patient-image-results-panel">
+                    <div class="section-heading-row compact-row">
+                        <div>
+                            <span class="section-kicker">Kết quả gần đây</span>
+                            <h2>Ảnh đã tải lên</h2>
+                        </div>
+                    </div>
+
+                    <div class="patient-image-list">
+                        @forelse ($user->medicalImages as $image)
+                            <div class="patient-image-row">
+                                <img src="{{ asset('storage/'.$image->image_path) }}" alt="Ảnh y tế {{ $image->id }}">
+                                <div>
+                                    <strong>{{ $modalityLabels[$image->modality] ?? $image->modality }}{{ $image->body_part ? ' - '.$image->body_part : '' }}</strong>
+                                    <small>{{ $image->created_at->format('d/m/Y H:i') }}</small>
+                                    <em class="status-pill {{ $image->analysis_status }}">{{ $imageStatusLabels[$image->analysis_status] ?? $image->analysis_status }}</em>
+                                    <p>{{ $image->summary ?: 'Chưa có kết quả phân tích.' }}</p>
+
+                                    @if (! empty($image->findings))
+                                        <ul class="patient-image-findings">
+                                            @foreach ($image->findings as $finding)
+                                                <li>
+                                                    {{ $finding['label'] ?? $finding['class'] ?? 'Bất thường nghi ngờ' }}
+                                                    @if (isset($finding['confidence']))
+                                                        - {{ round((float) $finding['confidence'] * 100) }}%
+                                                    @endif
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+                                </div>
+                            </div>
+                        @empty
+                            <div class="empty-state">Bạn chưa tải ảnh y tế nào.</div>
+                        @endforelse
+                    </div>
+                </article>
+            </div>
+        </section>
+    @endif
 
     <section class="section section-muted">
         <div class="container account-layout">

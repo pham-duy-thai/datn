@@ -11,7 +11,7 @@
         <link rel="stylesheet" href="{{ asset('asset/css/style.css') }}">
         <link rel="stylesheet" href="{{ asset('css/auth-template.css') }}">
     </head>
-    <body class="img js-fullheight auth-template-body" style="background-image: url('{{ asset('asset/images/bg.jpg') }}');">
+    <body class="img js-fullheight auth-template-body" style="background-image: url('{{ asset('images/frontend/bg.jpg') }}');">
         <section class="ftco-section">
             <div class="container">
                 <div class="row justify-content-center">

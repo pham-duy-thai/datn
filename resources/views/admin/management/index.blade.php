@@ -9,7 +9,7 @@
             <h1>{{ $title }}</h1>
             <p>{{ $description }}</p>
         </div>
-        <a class="admin-primary-link" href="{{ $createUrl }}">Thêm mới</a>
+        <a class="admin-primary-link" href="{{ $createUrl }}">{{ $createLabel ?? 'Thêm mới' }}</a>
     </section>
 
     <form class="admin-filter" method="GET" action="{{ route($routeName) }}">
@@ -56,6 +56,13 @@
                             <td>
                                 <div class="admin-actions">
                                     <a href="{{ $row['editUrl'] }}">Sửa</a>
+                                    @foreach (($row['extraActions'] ?? []) as $action)
+                                        <form method="POST" action="{{ $action['url'] }}" onsubmit="return confirm(@js($action['confirm'] ?? 'Bạn chắc chắn muốn thực hiện thao tác này?'))">
+                                            @csrf
+                                            @method($action['method'] ?? 'POST')
+                                            <button type="submit">{{ $action['label'] }}</button>
+                                        </form>
+                                    @endforeach
                                     <form method="POST" action="{{ $row['deleteUrl'] }}" onsubmit="return confirm('Bạn chắc chắn muốn xóa dữ liệu này?')">
                                         @csrf
                                         @method('DELETE')

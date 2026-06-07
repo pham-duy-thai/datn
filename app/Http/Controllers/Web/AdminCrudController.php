@@ -127,7 +127,7 @@ class AdminCrudController extends Controller
         $isEdit = $record !== null;
 
         return view('admin.management.form', [
-            'title' => ($isEdit ? 'Sửa ' : 'Thêm ').$this->title($resource),
+            'title' => ($isEdit ? 'Sửa ' : 'Thêm ').$this->formTitle($resource),
             'eyebrow' => $isEdit ? 'Cập nhật' : 'Thêm mới',
             'action' => $isEdit
                 ? route($this->routeName($resource, 'update'), $record->getKey())
@@ -148,7 +148,7 @@ class AdminCrudController extends Controller
                 $this->textField('name', 'Tên chuyên khoa', $record?->name, required: true),
                 $this->textField('slug', 'Đường dẫn', $record?->slug, 'Tự sinh từ tên nếu để trống'),
                 $this->textareaField('description', 'Mô tả', $record?->description),
-                $this->textField('image', 'Ảnh', $record?->image, 'Ví dụ: images/about-bg.jpg'),
+                $this->textField('image', 'Ảnh', $record?->image, 'Ví dụ: images/frontend/about-bg.jpg'),
                 $this->selectField('is_active', 'Trạng thái', $record?->is_active ?? true, ['1' => 'Đang hoạt động', '0' => 'Tạm ẩn'], required: true),
             ],
             'doctors' => [
@@ -157,7 +157,7 @@ class AdminCrudController extends Controller
                 $this->textField('name', 'Tên bác sĩ', $record?->name, required: true),
                 $this->emailField('email', 'Thư điện tử', $record?->email),
                 $this->textField('phone', 'Số điện thoại', $record?->phone),
-                $this->textField('avatar', 'Ảnh đại diện', $record?->avatar, 'Ví dụ: images/team-image1.jpg'),
+                $this->textField('avatar', 'Ảnh đại diện', $record?->avatar, 'Ví dụ: images/frontend/team-image1.jpg'),
                 $this->textField('specialization', 'Chuyên môn', $record?->specialization),
                 $this->textField('degree', 'Học vị', $record?->degree),
                 $this->numberField('experience_years', 'Số năm kinh nghiệm', $record?->experience_years ?? 0, min: 0, max: 255),
@@ -208,7 +208,7 @@ class AdminCrudController extends Controller
                 $this->textareaField('description', 'Mô tả', $record?->description),
                 $this->numberField('price', 'Giá dịch vụ', $record?->price ?? 0, min: 0, step: 1000),
                 $this->numberField('duration_minutes', 'Thời lượng phút', $record?->duration_minutes, min: 1),
-                $this->textField('image', 'Ảnh', $record?->image, 'Ví dụ: images/appointment-image.jpg'),
+                $this->textField('image', 'Ảnh', $record?->image, 'Ví dụ: images/frontend/appointment-image.jpg'),
                 $this->selectField('is_active', 'Trạng thái', $record?->is_active ?? true, ['1' => 'Đang hoạt động', '0' => 'Tạm ẩn'], required: true),
             ],
             'news' => [
@@ -217,7 +217,7 @@ class AdminCrudController extends Controller
                 $this->textField('slug', 'Đường dẫn', $record?->slug, 'Tự sinh từ tiêu đề nếu để trống'),
                 $this->textareaField('excerpt', 'Tóm tắt', $record?->excerpt),
                 $this->textareaField('content', 'Nội dung', $record?->content, required: true, rows: 10),
-                $this->textField('thumbnail', 'Ảnh đại diện', $record?->thumbnail, 'Ví dụ: images/news-image1.jpg'),
+                $this->textField('thumbnail', 'Ảnh đại diện', $record?->thumbnail, 'Ví dụ: images/frontend/news-image1.jpg'),
                 $this->selectField('status', 'Trạng thái', $record?->status ?? 'draft', ['draft' => 'Bản nháp', 'published' => 'Đã xuất bản'], required: true),
                 $this->datetimeField('published_at', 'Ngày xuất bản', $record?->published_at?->format('Y-m-d\TH:i')),
             ],
@@ -387,7 +387,7 @@ class AdminCrudController extends Controller
             'date_of_birth' => ['nullable', 'date'],
             'address' => ['nullable', 'string', 'max:255'],
             'avatar' => ['nullable', 'string', 'max:255'],
-            'password' => [$record ? 'nullable' : 'required', 'string', 'min:6'],
+            'password' => [$record ? 'nullable' : 'required', 'string', 'min:6', 'confirmed'],
         ];
     }
 
@@ -456,6 +456,11 @@ class AdminCrudController extends Controller
         return $this->resources[$resource]['title'];
     }
 
+    private function formTitle(string $resource): string
+    {
+        return $resource === 'users' ? 'tài khoản người dùng' : $this->title($resource);
+    }
+
     private function userFields(?Model $record): array
     {
         return [
@@ -466,8 +471,9 @@ class AdminCrudController extends Controller
             $this->selectField('gender', 'Giới tính', $record?->gender, $this->genderLabels, 'Không chọn'),
             $this->dateField('date_of_birth', 'Ngày sinh', $record?->date_of_birth?->format('Y-m-d')),
             $this->textField('address', 'Địa chỉ', $record?->address),
-            $this->textField('avatar', 'Ảnh đại diện', $record?->avatar, 'Ví dụ: images/team-image1.jpg'),
+            $this->textField('avatar', 'Ảnh đại diện', $record?->avatar, 'Ví dụ: images/frontend/team-image1.jpg'),
             $this->passwordField('password', 'Mật khẩu', $record ? 'Để trống nếu không đổi mật khẩu' : null, required: ! $record),
+            $this->passwordField('password_confirmation', 'Nhập lại mật khẩu', $record ? 'Chỉ nhập khi đổi mật khẩu' : null, required: ! $record),
         ];
     }
 
@@ -480,8 +486,9 @@ class AdminCrudController extends Controller
             $this->selectField('gender', 'Giới tính', $record?->gender, $this->genderLabels, 'Không chọn'),
             $this->dateField('date_of_birth', 'Ngày sinh', $record?->date_of_birth?->format('Y-m-d')),
             $this->textField('address', 'Địa chỉ', $record?->address),
-            $this->textField('avatar', 'Ảnh đại diện', $record?->avatar, 'Ví dụ: images/team-image2.jpg'),
+            $this->textField('avatar', 'Ảnh đại diện', $record?->avatar, 'Ví dụ: images/frontend/team-image2.jpg'),
             $this->passwordField('password', 'Mật khẩu', $record ? 'Để trống nếu không đổi mật khẩu' : null, required: ! $record),
+            $this->passwordField('password_confirmation', 'Nhập lại mật khẩu', $record ? 'Chỉ nhập khi đổi mật khẩu' : null, required: ! $record),
         ];
     }
 

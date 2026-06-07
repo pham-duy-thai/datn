@@ -21,7 +21,7 @@
     <section class="section appointment-section" id="appointment">
         <div class="container appointment-layout">
             <aside class="appointment-doctor-visual" aria-label="Bác sĩ hỗ trợ đặt lịch">
-                <img src="{{ asset('images/team-image1.jpg') }}" alt="Bác sĩ Minh An hỗ trợ đặt lịch khám">
+                <img src="{{ asset('images/frontend/team-image1.jpg') }}" alt="Bác sĩ Minh An hỗ trợ đặt lịch khám">
             </aside>
 
             <form class="form-panel" method="POST" action="{{ route('appointments.store') }}" data-appointment-form>

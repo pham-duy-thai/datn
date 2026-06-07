@@ -5,11 +5,11 @@
 @section('content')
     @php
         $primaryBanner = $banners->first();
-        $bannerImage = $primaryBanner?->image && file_exists(public_path($primaryBanner->image)) ? $primaryBanner->image : 'images/slider1.jpg';
-        $departmentImages = ['images/about-bg.jpg', 'images/slider2.jpg', 'images/slider3.jpg'];
-        $doctorImages = ['images/team-image1.jpg', 'images/team-image2.jpg', 'images/team-image3.jpg'];
-        $serviceImages = ['images/appointment-image.jpg', 'images/news-image2.jpg', 'images/news-image3.jpg'];
-        $newsImages = ['images/news-image1.jpg', 'images/news-image2.jpg', 'images/news-image3.jpg'];
+        $bannerImage = $primaryBanner?->image && file_exists(public_path($primaryBanner->image)) ? $primaryBanner->image : 'images/frontend/slider1.jpg';
+        $departmentImages = ['images/frontend/about-bg.jpg', 'images/frontend/slider2.jpg', 'images/frontend/slider3.jpg'];
+        $doctorImages = ['images/frontend/team-image1.jpg', 'images/frontend/team-image2.jpg', 'images/frontend/team-image3.jpg'];
+        $serviceImages = ['images/frontend/appointment-image.jpg', 'images/frontend/news-image2.jpg', 'images/frontend/news-image3.jpg'];
+        $newsImages = ['images/frontend/news-image1.jpg', 'images/frontend/news-image2.jpg', 'images/frontend/news-image3.jpg'];
     @endphp
 
     <section class="hero-section">

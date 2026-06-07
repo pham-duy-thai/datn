@@ -4,8 +4,8 @@
 
 @section('content')
     @php
-        $articleImage = $article->thumbnail && file_exists(public_path($article->thumbnail)) ? $article->thumbnail : 'images/news-image1.jpg';
-        $newsImages = ['images/news-image1.jpg', 'images/news-image2.jpg', 'images/news-image3.jpg'];
+        $articleImage = $article->thumbnail && file_exists(public_path($article->thumbnail)) ? $article->thumbnail : 'images/frontend/news-image1.jpg';
+        $newsImages = ['images/frontend/news-image1.jpg', 'images/frontend/news-image2.jpg', 'images/frontend/news-image3.jpg'];
     @endphp
 
     <section class="page-hero compact">

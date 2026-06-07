@@ -5,8 +5,8 @@
 @section('content')
     @php
         $weekdayNames = [1 => 'Thứ 2', 2 => 'Thứ 3', 3 => 'Thứ 4', 4 => 'Thứ 5', 5 => 'Thứ 6', 6 => 'Thứ 7', 7 => 'Chủ nhật'];
-        $doctorImage = $doctor->avatar && file_exists(public_path($doctor->avatar)) ? $doctor->avatar : 'images/team-image1.jpg';
-        $serviceImages = ['images/appointment-image.jpg', 'images/news-image2.jpg', 'images/news-image3.jpg'];
+        $doctorImage = $doctor->avatar && file_exists(public_path($doctor->avatar)) ? $doctor->avatar : 'images/frontend/team-image1.jpg';
+        $serviceImages = ['images/frontend/appointment-image.jpg', 'images/frontend/news-image2.jpg', 'images/frontend/news-image3.jpg'];
     @endphp
 
     <section class="page-hero">

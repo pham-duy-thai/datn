@@ -4,7 +4,7 @@
 
 @section('content')
     @php
-        $departmentImages = ['images/about-bg.jpg', 'images/slider2.jpg', 'images/slider3.jpg'];
+        $departmentImages = ['images/frontend/about-bg.jpg', 'images/frontend/slider2.jpg', 'images/frontend/slider3.jpg'];
     @endphp
 
     <section class="page-hero compact">

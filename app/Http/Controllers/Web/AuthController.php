@@ -109,9 +109,15 @@ class AuthController extends Controller
                     }
                 );
             });
-        } catch (Throwable) {
+        } catch (Throwable $exception) {
+            report($exception);
+
+            $message = str_contains($exception->getMessage(), '535')
+                ? 'Gmail từ chối đăng nhập SMTP. Vui lòng tạo Gmail App Password mới và cập nhật MAIL_PASSWORD trong file .env.'
+                : 'Không gửi được email. Vui lòng kiểm tra Gmail App Password trong file .env.';
+
             throw ValidationException::withMessages([
-                'email' => 'Không gửi được email. Vui lòng kiểm tra Gmail App Password trong file .env.',
+                'email' => $message,
             ]);
         }
 
@@ -209,9 +215,16 @@ class AuthController extends Controller
             'password_reset_verified_email',
         ]);
 
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        $destination = in_array($user->role, ['admin', 'receptionist'], true)
+            ? route('admin.dashboard')
+            : route('home');
+
         return redirect()
-            ->route('login')
-            ->with('success', 'Đã cập nhật mật khẩu mới. Bạn có thể đăng nhập.');
+            ->to($destination)
+            ->with('success', 'Đã cập nhật mật khẩu mới. Bạn đã được đăng nhập.');
     }
 
     public function register(Request $request): RedirectResponse

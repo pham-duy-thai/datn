@@ -50,6 +50,11 @@ class User extends Authenticatable
         return $this->hasMany(MedicalRecord::class);
     }
 
+    public function medicalImages(): HasMany
+    {
+        return $this->hasMany(MedicalImage::class);
+    }
+
     public function payments(): HasMany
     {
         return $this->hasMany(Payment::class);

@@ -4,8 +4,8 @@
 
 @section('content')
     @php
-        $serviceImage = $service->image && file_exists(public_path($service->image)) ? $service->image : 'images/appointment-image.jpg';
-        $doctorImages = ['images/team-image1.jpg', 'images/team-image2.jpg', 'images/team-image3.jpg'];
+        $serviceImage = $service->image && file_exists(public_path($service->image)) ? $service->image : 'images/frontend/appointment-image.jpg';
+        $doctorImages = ['images/frontend/team-image1.jpg', 'images/frontend/team-image2.jpg', 'images/frontend/team-image3.jpg'];
     @endphp
 
     <section class="page-hero compact">
@@ -48,7 +48,7 @@
             </div>
 
             <aside class="booking-callout">
-                <img class="panel-image" src="{{ asset('images/appointment-image.jpg') }}" alt="Ảnh đặt lịch dịch vụ">
+                <img class="panel-image" src="{{ asset('images/frontend/appointment-image.jpg') }}" alt="Ảnh đặt lịch dịch vụ">
                 <span class="section-kicker">Đặt lịch</span>
                 <h2>Cần tư vấn trước khi chọn?</h2>
                 <p>Gửi liên hệ nếu cần thêm thông tin về quy trình, chi phí hoặc bác sĩ phù hợp.</p>

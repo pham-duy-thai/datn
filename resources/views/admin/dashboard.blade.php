@@ -18,7 +18,7 @@
         ];
     @endphp
 
-    <section class="admin-hero" style="background-image: linear-gradient(90deg, rgba(18, 24, 38, .86), rgba(18, 24, 38, .42)), url('{{ asset('images/about-bg.jpg') }}')">
+    <section class="admin-hero" style="background-image: linear-gradient(90deg, rgba(18, 24, 38, .86), rgba(18, 24, 38, .42)), url('{{ asset('images/frontend/about-bg.jpg') }}')">
         <div>
             <span>Quản trị</span>
             <h1>Tổng quan hệ thống bệnh viện</h1>
@@ -81,7 +81,7 @@
         </article>
 
         <article class="admin-panel visual-panel">
-            <img src="{{ asset('images/appointment-image.jpg') }}" alt="Ảnh quản lý lịch hẹn">
+            <img src="{{ asset('images/frontend/appointment-image.jpg') }}" alt="Ảnh quản lý lịch hẹn">
             <div>
                 <span>Hôm nay</span>
                 <h2>{{ $stats['todayAppointments'] }} lịch hẹn</h2>

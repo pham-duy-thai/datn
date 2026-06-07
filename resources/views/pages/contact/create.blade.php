@@ -55,7 +55,7 @@
             </form>
 
             <aside class="booking-callout">
-                <img class="panel-image" src="{{ asset('images/news-image.jpg') }}" alt="Ảnh hỗ trợ liên hệ">
+                <img class="panel-image" src="{{ asset('images/frontend/news-image.jpg') }}" alt="Ảnh hỗ trợ liên hệ">
                 <span class="section-kicker">Hỗ trợ</span>
                 <h2>Kênh tiếp nhận</h2>
                 <p>Các yêu cầu liên hệ được ghi nhận để nhân viên kiểm tra và phản hồi.</p>

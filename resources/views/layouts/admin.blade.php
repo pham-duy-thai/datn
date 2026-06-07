@@ -31,7 +31,7 @@
         <div class="admin-shell">
             <aside class="admin-sidebar">
                 <div class="sidebar-visual">
-                    <img src="{{ asset('images/slider1.jpg') }}" alt="Ảnh quản trị hệ thống">
+                    <img src="{{ asset('images/frontend/slider1.jpg') }}" alt="Ảnh quản trị hệ thống">
                 </div>
                 <nav>
                     <a @class(['active' => request()->routeIs('admin.dashboard')]) href="{{ route('admin.dashboard') }}">

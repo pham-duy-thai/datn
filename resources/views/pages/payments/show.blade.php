@@ -73,7 +73,7 @@
             </article>
 
             <aside class="booking-callout">
-                <img class="panel-image" src="{{ asset('images/appointment-image.jpg') }}" alt="Ảnh thanh toán">
+                <img class="panel-image" src="{{ asset('images/frontend/appointment-image.jpg') }}" alt="Ảnh thanh toán">
                 <span class="section-kicker">Hướng dẫn</span>
                 @if ($payment->method === 'cash' && $payment->status === 'unpaid')
                     <h2>Thanh toán tại bệnh viện</h2>

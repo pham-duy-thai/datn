@@ -59,7 +59,7 @@ main {
     padding: 90px 0;
     background:
         linear-gradient(90deg, rgba(20, 20, 20, 0.72), rgba(20, 20, 20, 0.35)),
-        url('../images/slider1.jpg') center/cover no-repeat;
+        url('../images/frontend/slider1.jpg') center/cover no-repeat;
 }
 
 .page-hero.compact {
@@ -693,7 +693,7 @@ textarea:focus {
     padding: 72px 0;
     background:
         linear-gradient(90deg, rgba(20, 20, 20, 0.72), rgba(20, 20, 20, 0.28)),
-        url('../images/appointment-image.jpg') center/cover no-repeat;
+        url('../images/frontend/appointment-image.jpg') center/cover no-repeat;
 }
 
 .auth-layout {
@@ -784,7 +784,7 @@ textarea:focus {
 .account-hero {
     background:
         linear-gradient(90deg, rgba(20, 20, 20, 0.72), rgba(20, 20, 20, 0.3)),
-        url('../images/about-bg.jpg') center/cover no-repeat;
+        url('../images/frontend/about-bg.jpg') center/cover no-repeat;
 }
 
 .account-layout {
@@ -909,6 +909,203 @@ textarea:focus {
 
 .compact-row {
     margin-bottom: 16px;
+}
+
+.doctor-ai-section {
+    padding-top: 0;
+}
+
+.doctor-ai-panel {
+    display: grid;
+    gap: 20px;
+}
+
+.doctor-ai-panel .section-heading-row p {
+    max-width: 760px;
+    margin-top: 8px;
+}
+
+.doctor-ai-form {
+    display: grid;
+    gap: 18px;
+}
+
+.doctor-ai-mode-grid,
+.doctor-ai-grid {
+    display: grid;
+    gap: 14px;
+}
+
+.doctor-ai-mode-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.doctor-ai-mode-grid label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1px solid var(--front-line);
+    border-radius: 6px;
+    background: #f9fbf6;
+    color: var(--front-text);
+    font-weight: 700;
+}
+
+.doctor-ai-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.doctor-ai-form label {
+    display: grid;
+    gap: 7px;
+}
+
+.doctor-ai-form label > span {
+    color: var(--front-text);
+    font-weight: 700;
+}
+
+.doctor-ai-form textarea,
+.doctor-ai-form select {
+    width: 100%;
+    border: 1px solid var(--front-line);
+    border-radius: 4px;
+    background: #ffffff;
+    color: var(--front-text);
+    padding: 12px;
+    outline: none;
+}
+
+.doctor-ai-form textarea:focus,
+.doctor-ai-form select:focus {
+    border-color: var(--front-primary);
+}
+
+.doctor-ai-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.doctor-ai-result {
+    display: block;
+    width: 100%;
+    max-height: none;
+    overflow: visible;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    padding: 18px;
+    border: 1px solid var(--front-line);
+    border-radius: 8px;
+    background: #f8faf5;
+    color: var(--front-text);
+    line-height: 1.65;
+}
+
+.doctor-ai-result.pending {
+    color: var(--front-muted);
+}
+
+.doctor-ai-result.error {
+    border-color: #fecaca;
+    background: #fff1f2;
+    color: #be123c;
+}
+
+.patient-image-ai-section {
+    padding-top: 0;
+}
+
+.patient-image-ai-layout {
+    display: grid;
+    grid-template-columns: minmax(0, .9fr) minmax(340px, 1fr);
+    gap: 26px;
+}
+
+.patient-image-upload-panel,
+.patient-image-results-panel {
+    display: grid;
+    gap: 20px;
+}
+
+.patient-image-form,
+.patient-image-grid {
+    display: grid;
+    gap: 16px;
+}
+
+.patient-image-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.patient-image-form label {
+    display: grid;
+    gap: 7px;
+}
+
+.patient-image-form label > span {
+    color: var(--front-text);
+    font-weight: 700;
+}
+
+.patient-image-form input,
+.patient-image-form select,
+.patient-image-form textarea {
+    width: 100%;
+    border: 1px solid var(--front-line);
+    border-radius: 4px;
+    background: #ffffff;
+    color: var(--front-text);
+    padding: 12px;
+    outline: none;
+}
+
+.patient-image-list {
+    display: grid;
+    gap: 14px;
+}
+
+.patient-image-row {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--front-line);
+}
+
+.patient-image-row:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.patient-image-row img {
+    width: 120px;
+    height: 96px;
+    border-radius: 6px;
+    object-fit: cover;
+    background: #f4f7f0;
+}
+
+.patient-image-row div {
+    display: grid;
+    gap: 6px;
+}
+
+.patient-image-row small,
+.patient-image-row p {
+    color: var(--front-muted);
+}
+
+.patient-image-findings {
+    margin: 4px 0 0;
+    padding-left: 18px;
+    color: var(--front-text);
+}
+
+.status-pill.failed {
+    background: #dc2626;
 }
 
 .ai-chat-widget {
@@ -1146,6 +1343,7 @@ textarea:focus {
     .hero-grid,
     .profile-grid,
     .account-layout,
+    .patient-image-ai-layout,
     .split-layout,
     .form-layout,
     .appointment-layout,
@@ -1159,7 +1357,10 @@ textarea:focus {
     }
 
     .account-password-panel,
-    .account-password-form {
+    .account-password-form,
+    .doctor-ai-mode-grid,
+    .doctor-ai-grid,
+    .patient-image-grid {
         grid-template-columns: 1fr;
     }
 
@@ -1249,5 +1450,14 @@ textarea:focus {
         width: 100%;
         height: 150px;
         flex-basis: auto;
+    }
+
+    .patient-image-row {
+        grid-template-columns: 1fr;
+    }
+
+    .patient-image-row img {
+        width: 100%;
+        height: 180px;
     }
 }

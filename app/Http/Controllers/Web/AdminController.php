@@ -17,6 +17,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
@@ -120,13 +121,14 @@ class AdminController extends Controller
             description: 'Theo dõi tài khoản admin, bác sĩ, bệnh nhân và nhân viên lễ tân.',
             routeName: 'admin.users.index',
             createRouteName: 'admin.users.create',
-            columns: ['#', 'Người dùng', 'Liên hệ', 'Vai trò', 'Thông tin', 'Ngày tạo'],
+            columns: ['#', 'Người dùng', 'Liên hệ', 'Vai trò', 'Mật khẩu', 'Thông tin', 'Ngày tạo'],
             paginator: $users,
             rows: $users->getCollection()->map(fn (User $user): array => $this->actionRow([
                 (string) $user->id,
                 $this->lines($user->name, $user->email),
                 $this->lines($user->phone ?: 'Chưa cập nhật', $user->address ?: 'Chưa cập nhật địa chỉ'),
                 $this->roleLabels[$user->role] ?? $user->role,
+                $this->lines('********', 'Có thể reset về: password'),
                 $this->lines(
                     'Giới tính: '.($this->genderLabels[$user->gender] ?? 'Chưa cập nhật'),
                     'Ngày sinh: '.($user->date_of_birth?->format('d/m/Y') ?? 'Chưa cập nhật'),
@@ -134,7 +136,14 @@ class AdminController extends Controller
                     'Bệnh án: '.$user->medical_records_count
                 ),
                 $user->created_at->format('d/m/Y H:i'),
-            ], 'admin.users.edit', 'admin.users.destroy', $user))->all(),
+            ], 'admin.users.edit', 'admin.users.destroy', $user, [
+                [
+                    'label' => 'Reset mật khẩu',
+                    'url' => route('admin.users.reset-password', $user),
+                    'method' => 'PATCH',
+                    'confirm' => "Reset mật khẩu của {$user->name} về password?",
+                ],
+            ]))->all(),
             filters: [
                 [
                     'name' => 'role',
@@ -142,8 +151,19 @@ class AdminController extends Controller
                     'options' => $this->roleLabels,
                 ],
             ],
-            searchPlaceholder: 'Tên, thư điện tử, số điện thoại, địa chỉ'
+            searchPlaceholder: 'Tên, thư điện tử, số điện thoại, địa chỉ',
+            createLabel: 'Thêm tài khoản'
         );
+    }
+
+    public function resetUserPassword(User $user): RedirectResponse
+    {
+        $user->forceFill([
+            'password' => Hash::make('password'),
+            'must_change_password' => true,
+        ])->save();
+
+        return back()->with('success', "Đã reset mật khẩu của {$user->name} về password.");
     }
 
     public function patients(Request $request): View
@@ -622,7 +642,8 @@ class AdminController extends Controller
         $paginator,
         array $rows,
         array $filters = [],
-        string $searchPlaceholder = 'Tìm kiếm'
+        string $searchPlaceholder = 'Tìm kiếm',
+        string $createLabel = 'Thêm mới'
     ): View {
         return view('admin.management.index', [
             'title' => $title,
@@ -630,6 +651,7 @@ class AdminController extends Controller
             'description' => $description,
             'routeName' => $routeName,
             'createUrl' => route($createRouteName),
+            'createLabel' => $createLabel,
             'columns' => $columns,
             'paginator' => $paginator,
             'rows' => $rows,
@@ -638,12 +660,13 @@ class AdminController extends Controller
         ]);
     }
 
-    private function actionRow(array $cells, string $editRouteName, string $deleteRouteName, mixed $record): array
+    private function actionRow(array $cells, string $editRouteName, string $deleteRouteName, mixed $record, array $extraActions = []): array
     {
         return [
             'cells' => $cells,
             'editUrl' => route($editRouteName, $record->getKey()),
             'deleteUrl' => route($deleteRouteName, $record->getKey()),
+            'extraActions' => $extraActions,
         ];
     }
 
