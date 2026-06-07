@@ -1,4 +1,13 @@
 .auth-template-body {
+    height: auto !important;
+    min-height: 100vh;
+    overflow-y: auto;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+}
+
+.auth-template-body .ftco-section {
     min-height: 100vh;
 }
 
