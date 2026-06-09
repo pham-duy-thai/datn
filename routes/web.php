@@ -6,6 +6,7 @@ use App\Http\Controllers\Web\AdminCrudController;
 use App\Http\Controllers\Web\ChatbotController;
 use App\Http\Controllers\Web\MedicalAiController;
 use App\Http\Controllers\Web\MedicalImageController;
+use App\Http\Controllers\Web\DoctorMedicalRecordController;
 use App\Http\Controllers\Web\PageController;
 use App\Http\Controllers\Web\PaymentController;
 use Illuminate\Support\Facades\Route;
@@ -56,7 +57,9 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/khoa/{department:slug}', [PageController::class, 'departmentShow'])->name('departments.show');
 
     Route::get('/bac-si', [PageController::class, 'doctors'])->name('doctors.index');
-    Route::get('/bac-si/{doctor}', [PageController::class, 'doctorShow'])->name('doctors.show');
+    Route::get('/bac-si/{doctor}', [PageController::class, 'doctorShow'])
+        ->whereNumber('doctor')
+        ->name('doctors.show');
 
     Route::get('/dich-vu', [PageController::class, 'services'])->name('services.index');
     Route::get('/dich-vu/{service:slug}', [PageController::class, 'serviceShow'])->name('services.show');
@@ -75,6 +78,19 @@ Route::middleware('auth')->group(function (): void {
 Route::post('/ai-ho-tro-bac-si', MedicalAiController::class)
     ->middleware(['auth', 'role:doctor'])
     ->name('doctor.ai.assist');
+
+Route::middleware(['auth', 'role:doctor'])
+    ->prefix('bac-si/ho-so-benh-nhan')
+    ->name('doctor.records.')
+    ->group(function (): void {
+        Route::get('/', [DoctorMedicalRecordController::class, 'index'])->name('index');
+        Route::get('/them', [DoctorMedicalRecordController::class, 'create'])->name('create');
+        Route::post('/', [DoctorMedicalRecordController::class, 'store'])->name('store');
+        Route::get('/{medicalRecord}/sua', [DoctorMedicalRecordController::class, 'edit'])->name('edit');
+        Route::put('/{medicalRecord}', [DoctorMedicalRecordController::class, 'update'])->name('update');
+        Route::post('/{medicalRecord}/xet-nghiem', [DoctorMedicalRecordController::class, 'storeLabResult'])->name('lab-results.store');
+        Route::delete('/{medicalRecord}/xet-nghiem/{labResult}', [DoctorMedicalRecordController::class, 'destroyLabResult'])->name('lab-results.destroy');
+    });
 
 Route::middleware(['auth', 'role:admin,receptionist'])
     ->prefix('admin')

@@ -44,6 +44,11 @@ class MedicalRecord extends Model
         return $this->hasMany(MedicalImage::class);
     }
 
+    public function labResults(): HasMany
+    {
+        return $this->hasMany(LabResult::class);
+    }
+
     protected function casts(): array
     {
         return [

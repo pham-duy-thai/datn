@@ -352,3 +352,5 @@ ai-services/medical-yolo
 php artisan route:list
 php artisan test
 ```
+https://dashboard.render.com/web/srv-d8ik4lbtqb8s73b8l02g/events
+https://hospital-backend-87l5.onrender.com/

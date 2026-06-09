@@ -95,6 +95,7 @@ class MedicalImageAiService
                 'x-goog-api-key' => config('chatbot.gemini_api_key'),
             ])
                 ->timeout((int) config('medical_imaging.timeout', 45))
+                ->retry(3, 1000, throw: false)
                 ->post($url, [
                     'contents' => [
                         [
@@ -112,7 +113,10 @@ class MedicalImageAiService
                     ],
                     'generationConfig' => [
                         'temperature' => 0.2,
-                        'maxOutputTokens' => 900,
+                        'maxOutputTokens' => 4096,
+                        'thinkingConfig' => [
+                            'thinkingBudget' => 0,
+                        ],
                     ],
                 ]);
         } catch (Throwable $exception) {
@@ -129,10 +133,29 @@ class MedicalImageAiService
                 'body' => $response->body(),
             ]);
 
-            return $this->markFailed($medicalImage, 'Gemini Vision trả lỗi khi đọc ảnh. Bác sĩ sẽ cần đọc ảnh trực tiếp.');
+            if (in_array($response->status(), [429, 503], true)) {
+                return $this->markPending(
+                    $medicalImage,
+                    'Gemini Vision đang quá tải hoặc bị giới hạn tạm thời. Ảnh đã được lưu, vui lòng thử phân tích lại sau.'
+                );
+            }
+
+            return $this->markFailed($medicalImage, $this->geminiErrorMessage($response->json()));
         }
 
-        $summary = $this->extractGeminiText($response->json());
+        $payload = $response->json();
+        $summary = $this->extractGeminiText($payload);
+        $finishReason = $payload['candidates'][0]['finishReason'] ?? null;
+
+        Log::info('Medical image Gemini response completed', [
+            'medical_image_id' => $medicalImage->id,
+            'finish_reason' => $finishReason,
+            'usage' => $payload['usageMetadata'] ?? null,
+        ]);
+
+        if ($finishReason && ! in_array($finishReason, ['STOP', 'FINISH_REASON_UNSPECIFIED'], true)) {
+            $summary = trim($summary)."\n\n[Lưu ý: Gemini kết thúc với trạng thái {$finishReason}, câu trả lời có thể chưa đầy đủ.]";
+        }
 
         $medicalImage->update([
             'analysis_status' => 'completed',
@@ -156,17 +179,23 @@ class MedicalImageAiService
 
         $modality = $modalityLabels[$medicalImage->modality] ?? $medicalImage->modality;
         $bodyPart = $medicalImage->body_part ?: 'chưa rõ vùng chụp';
-        $note = $medicalImage->note ?: 'không có ghi chú thêm';
+        $question = $medicalImage->note;
 
         return <<<TEXT
-Bạn là trợ lý AI hỗ trợ giải thích ảnh y tế cho bệnh nhân bằng tiếng Việt dễ hiểu.
-Hãy xem ảnh {$modality}, vùng chụp: {$bodyPart}. Ghi chú của bệnh nhân: {$note}.
+Bạn là trợ lý AI hỗ trợ bệnh nhân tìm hiểu ảnh y tế bằng tiếng Việt dễ hiểu.
+Hãy xem ảnh {$modality}, vùng chụp: {$bodyPart}.
+
+Câu hỏi của bệnh nhân:
+{$question}
 
 Yêu cầu trả lời:
+- Trả lời trực tiếp câu hỏi của bệnh nhân ngay từ câu đầu tiên, không viết lời chào.
+- Trả lời đầy đủ nhưng ngắn gọn trong khoảng 150-300 từ.
+- Dựa trên nội dung nhìn thấy trong ảnh; nói rõ khi ảnh không cung cấp đủ thông tin để trả lời.
 - Không khẳng định chẩn đoán chắc chắn.
 - Không dùng từ ngữ gây hoảng sợ.
-- Nêu 2-4 điểm AI quan sát được nếu thấy rõ.
-- Nêu khả năng bất thường nghi ngờ nếu có, ví dụ viêm phổi, gãy xương, tràn dịch màng phổi, bất thường tim phổi, vùng tổn thương.
+- Sau câu trả lời trực tiếp, nêu ngắn gọn các điểm AI quan sát được có liên quan.
+- Nếu thấy bất thường nghi ngờ, giải thích bằng ngôn ngữ dễ hiểu.
 - Nếu ảnh không đủ chất lượng hoặc không rõ, nói rõ cần bác sĩ/radiologist đọc phim.
 - Kết thúc bằng câu: "Kết quả AI chỉ mang tính tham khảo, bạn cần bác sĩ xác nhận."
 TEXT;
@@ -200,6 +229,22 @@ TEXT;
         ]);
 
         return $medicalImage->fresh();
+    }
+
+    private function geminiErrorMessage(?array $payload): string
+    {
+        $status = $payload['error']['status'] ?? null;
+        $message = $payload['error']['message'] ?? '';
+
+        if (in_array($status, ['PERMISSION_DENIED', 'UNAUTHENTICATED'], true) || str_contains($message, 'API key')) {
+            return 'Gemini Vision báo API key không hợp lệ hoặc chưa có quyền truy cập.';
+        }
+
+        if ($status === 'NOT_FOUND' || str_contains(strtolower($message), 'not found')) {
+            return 'Gemini Vision báo model không tồn tại hoặc không hỗ trợ đọc ảnh.';
+        }
+
+        return 'Gemini Vision trả lỗi khi đọc ảnh. Bác sĩ sẽ cần đọc ảnh trực tiếp.';
     }
 
     private function summaryFromFindings(array $findings): string

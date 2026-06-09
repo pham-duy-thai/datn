@@ -59,6 +59,9 @@
                             <li @class(['active' => request()->routeIs('news.*')])><a href="{{ route('news.index') }}">Tin tức</a></li>
                             <li @class(['active' => request()->routeIs('contact.*')])><a href="{{ route('contact.create') }}">Liên hệ</a></li>
                             <li @class(['appointment-btn', 'active' => request()->routeIs('appointments.*')])><a href="{{ route('appointments.create') }}">Đặt lịch</a></li>
+                            @if (auth()->user()->role === 'doctor')
+                                <li @class(['active' => request()->routeIs('doctor.records.*')])><a href="{{ route('doctor.records.index') }}">Hồ sơ bệnh nhân</a></li>
+                            @endif
                             <li @class(['active' => request()->routeIs('account.*')])><a href="{{ route('account.show') }}"><i class="fa fa-user-o"></i> Tài khoản</a></li>
                             @if (in_array(auth()->user()->role, ['admin', 'receptionist'], true))
                                 <li @class(['active' => request()->routeIs('admin.*')])><a href="{{ route('admin.dashboard') }}">Quản trị</a></li>

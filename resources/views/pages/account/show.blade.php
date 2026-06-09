@@ -37,6 +37,11 @@
             'ultrasound' => 'Siêu âm',
             'endoscopy' => 'Nội soi',
         ];
+
+        $currentMedicalImage = $user->medicalImages->firstWhere('id', session('current_medical_image_id'));
+        $recentMedicalImages = $user->medicalImages->reject(
+            fn ($image) => $currentMedicalImage && $image->id === $currentMedicalImage->id
+        );
     @endphp
 
     <section class="page-hero compact account-hero">
@@ -153,7 +158,9 @@
                             <span class="section-kicker">AI hỗ trợ bác sĩ</span>
                             <h2>Trợ lý lâm sàng</h2>
                             <p>AI chỉ đưa gợi ý tham khảo. Bác sĩ là người quyết định cuối cùng dựa trên thăm khám và dữ liệu đầy đủ.</p>
+                            <small class="ai-provider-note">Đang sử dụng Gemini API cùng cấu hình với AI ảnh y tế của bệnh nhân.</small>
                         </div>
+                        <a class="button button-secondary" href="{{ route('doctor.records.index') }}">Quản lý hồ sơ bệnh nhân</a>
                     </div>
 
                     <form class="doctor-ai-form" data-medical-ai-form>
@@ -271,13 +278,15 @@
                             </label>
 
                             <label class="field-wide">
-                                <span>Ghi chú cho bác sĩ</span>
-                                <textarea name="note" rows="4" placeholder="Triệu chứng, thời gian chụp, bệnh viện chụp, vị trí đau..."></textarea>
+                                <span>Bạn muốn hỏi Gemini điều gì?</span>
+                                <textarea name="note" rows="4" required maxlength="2000"
+                                    placeholder="Ví dụ: Ảnh này có dấu hiệu gãy xương không? Vùng bất thường nằm ở đâu?">{{ old('note') }}</textarea>
+                                <small class="form-hint">Gemini sẽ xem ảnh và trả lời trực tiếp câu hỏi của bạn.</small>
                             </label>
                         </div>
 
                         <div class="doctor-ai-actions">
-                            <button class="button button-primary" type="submit">Tải lên và đọc ảnh</button>
+                            <button class="button button-primary" type="submit">Hỏi Gemini về ảnh</button>
                         </div>
                     </form>
                 </article>
@@ -285,20 +294,34 @@
                 <article class="content-panel patient-image-results-panel">
                     <div class="section-heading-row compact-row">
                         <div>
-                            <span class="section-kicker">Kết quả gần đây</span>
-                            <h2>Ảnh đã tải lên</h2>
+                            <span class="section-kicker">Kết quả phân tích</span>
+                            <h2>Ảnh đang tra</h2>
                         </div>
+                        <button class="button button-secondary patient-image-history-toggle" type="button"
+                            data-image-history-toggle aria-expanded="false" aria-controls="patient-image-history">
+                            Gần đây
+                        </button>
                     </div>
 
                     <div class="patient-image-list">
-                        @forelse ($user->medicalImages as $image)
+                        @if ($currentMedicalImage)
+                            @php
+                                $image = $currentMedicalImage;
+                            @endphp
                             <div class="patient-image-row">
                                 <img src="{{ asset('storage/'.$image->image_path) }}" alt="Ảnh y tế {{ $image->id }}">
                                 <div>
                                     <strong>{{ $modalityLabels[$image->modality] ?? $image->modality }}{{ $image->body_part ? ' - '.$image->body_part : '' }}</strong>
                                     <small>{{ $image->created_at->format('d/m/Y H:i') }}</small>
                                     <em class="status-pill {{ $image->analysis_status }}">{{ $imageStatusLabels[$image->analysis_status] ?? $image->analysis_status }}</em>
-                                    <p>{{ $image->summary ?: 'Chưa có kết quả phân tích.' }}</p>
+                                    <div class="patient-image-question">
+                                        <strong>Câu hỏi</strong>
+                                        <p>{{ $image->note }}</p>
+                                    </div>
+                                    <div class="patient-image-answer">
+                                        <strong>Gemini trả lời</strong>
+                                        <p>{{ $image->summary ?: 'Chưa có câu trả lời.' }}</p>
+                                    </div>
 
                                     @if (! empty($image->findings))
                                         <ul class="patient-image-findings">
@@ -314,9 +337,39 @@
                                     @endif
                                 </div>
                             </div>
-                        @empty
-                            <div class="empty-state">Bạn chưa tải ảnh y tế nào.</div>
-                        @endforelse
+                        @else
+                            <div class="empty-state">Tải một ảnh y tế để xem kết quả phân tích tại đây.</div>
+                        @endif
+                    </div>
+
+                    <div class="patient-image-history" id="patient-image-history" data-image-history hidden>
+                        <div class="patient-image-history-heading">
+                            <strong>Kết quả gần đây</strong>
+                            <button type="button" data-image-history-close aria-label="Đóng kết quả gần đây">&times;</button>
+                        </div>
+
+                        <div class="patient-image-list">
+                            @forelse ($recentMedicalImages as $image)
+                                <div class="patient-image-row">
+                                    <img src="{{ asset('storage/'.$image->image_path) }}" alt="Ảnh y tế {{ $image->id }}">
+                                    <div>
+                                        <strong>{{ $modalityLabels[$image->modality] ?? $image->modality }}{{ $image->body_part ? ' - '.$image->body_part : '' }}</strong>
+                                        <small>{{ $image->created_at->format('d/m/Y H:i') }}</small>
+                                        <em class="status-pill {{ $image->analysis_status }}">{{ $imageStatusLabels[$image->analysis_status] ?? $image->analysis_status }}</em>
+                                        <div class="patient-image-question">
+                                            <strong>Câu hỏi</strong>
+                                            <p>{{ $image->note ?: 'Không có câu hỏi.' }}</p>
+                                        </div>
+                                        <div class="patient-image-answer">
+                                            <strong>Gemini trả lời</strong>
+                                            <p>{{ $image->summary ?: 'Chưa có câu trả lời.' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="empty-state">Chưa có kết quả gần đây.</div>
+                            @endforelse
+                        </div>
                     </div>
                 </article>
             </div>
@@ -365,24 +418,40 @@
                 <div class="section-heading-row compact-row">
                     <div>
                         <span class="section-kicker">Bệnh án</span>
-                        <h2>Hồ sơ khám gần đây</h2>
+                        <h2>{{ $user->role === 'doctor' ? 'Hồ sơ bệnh nhân phụ trách' : 'Hồ sơ khám gần đây' }}</h2>
                     </div>
+                    @if ($user->role === 'doctor')
+                        <a class="text-link" href="{{ route('doctor.records.index') }}">Quản lý tất cả</a>
+                    @endif
                 </div>
 
                 <div class="stack-list">
-                    @forelse ($user->medicalRecords as $record)
+                    @forelse ($user->role === 'doctor' ? $doctorRecords : $user->medicalRecords as $record)
                         <div class="service-row account-record-row">
                             <span>
-                                <strong>{{ $record->diagnosis ?: 'Chưa cập nhật chẩn đoán' }}</strong>
+                                <strong>
+                                    {{ $user->role === 'doctor'
+                                        ? ($record->user?->name ?? $record->appointment?->patient_name ?? 'Chưa rõ bệnh nhân')
+                                        : ($record->diagnosis ?: 'Chưa cập nhật chẩn đoán') }}
+                                </strong>
                                 <small>
                                     {{ $record->examined_at?->format('d/m/Y') ?? 'Chưa có ngày khám' }}
-                                    - {{ $record->doctor?->name ?? 'Chưa có bác sĩ' }}
+                                    -
+                                    {{ $user->role === 'doctor'
+                                        ? ($record->diagnosis ?: 'Chưa cập nhật chẩn đoán')
+                                        : ($record->doctor?->name ?? 'Chưa có bác sĩ') }}
                                 </small>
                             </span>
-                            <small>{{ str($record->treatment ?: $record->note ?: 'Chưa có ghi chú điều trị')->limit(70) }}</small>
+                            @if ($user->role === 'doctor')
+                                <a class="button button-secondary" href="{{ route('doctor.records.edit', $record) }}">Cập nhật</a>
+                            @else
+                                <small>{{ str($record->treatment ?: $record->note ?: 'Chưa có ghi chú điều trị')->limit(70) }}</small>
+                            @endif
                         </div>
                     @empty
-                        <div class="empty-state">Bạn chưa có hồ sơ khám nào.</div>
+                        <div class="empty-state">
+                            {{ $user->role === 'doctor' ? 'Bác sĩ chưa có hồ sơ bệnh nhân nào.' : 'Bạn chưa có hồ sơ khám nào.' }}
+                        </div>
                     @endforelse
                 </div>
             </article>

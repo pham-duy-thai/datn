@@ -1,4 +1,33 @@
 (function () {
+    var toggle = document.querySelector('[data-image-history-toggle]');
+    var history = document.querySelector('[data-image-history]');
+    var close = document.querySelector('[data-image-history-close]');
+
+    if (!toggle || !history) {
+        return;
+    }
+
+    function setHistoryOpen(open) {
+        history.hidden = !open;
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+
+        if (open && close) {
+            close.focus();
+        } else if (!open) {
+            toggle.focus();
+        }
+    }
+
+    toggle.addEventListener('click', function () {
+        setHistoryOpen(history.hidden);
+    });
+
+    close?.addEventListener('click', function () {
+        setHistoryOpen(false);
+    });
+})();
+
+(function () {
     var doctorSelect = document.querySelector('[data-doctor-select]');
     var scheduleSelect = document.querySelector('[data-schedule-select]');
 

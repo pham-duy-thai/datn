@@ -134,6 +134,7 @@ TEXT;
             'x-goog-api-key' => config('chatbot.gemini_api_key'),
         ])
             ->timeout(30)
+            ->retry(3, 1000, throw: false)
             ->post($url, [
                 'contents' => [
                     [
@@ -146,6 +147,9 @@ TEXT;
                 'generationConfig' => [
                     'temperature' => 0.2,
                     'maxOutputTokens' => 4096,
+                    'thinkingConfig' => [
+                        'thinkingBudget' => 0,
+                    ],
                 ],
             ]);
 

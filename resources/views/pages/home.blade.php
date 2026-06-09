@@ -93,29 +93,20 @@
                             : $doctorImages[$loop->index % count($doctorImages)];
                     @endphp
                     <article class="doctor-card" tabindex="0">
-                        <div class="profile-card">
-                            <img class="doctor-avatar" src="{{ asset($doctorImage) }}" alt="Ảnh bác sĩ {{ $doctor->name }}">
-                            <div>
-                                <h3>
-                                    <a href="{{ route('doctors.show', $doctor) }}">{{ $doctor->name }}</a>
-                                </h3>
-                                <p>{{ $doctor->department?->name ?? 'Chưa gắn khoa' }}</p>
+                        <img class="doctor-card-image" src="{{ asset($doctorImage) }}" alt="Ảnh bác sĩ {{ $doctor->name }}">
+                        <div class="doctor-hover-panel">
+                            <span>{{ $doctor->department?->name ?? 'Bác sĩ' }}</span>
+                            <h3><a href="{{ route('doctors.show', $doctor) }}">{{ $doctor->name }}</a></h3>
+                            <p>{{ $doctor->specialization ?: 'Đang cập nhật chuyên môn' }}</p>
+                            <p class="doctor-degree">{{ $doctor->degree ?: 'Đang cập nhật học vị' }}</p>
+                            <div class="card-meta">
+                                <span>{{ $doctor->experience_years ?? 0 }} năm kinh nghiệm</span>
+                                <span>{{ number_format((float) $doctor->consultation_fee) }} VNĐ</span>
                             </div>
-                        </div>
-                        <p>{{ $doctor->specialization ?: $doctor->degree ?: 'Đang cập nhật chuyên môn.' }}</p>
-                        <div class="card-meta">
-                            <span>{{ $doctor->experience_years ?? 0 }} năm kinh nghiệm</span>
-                            <span>{{ number_format((float) $doctor->consultation_fee) }} VNĐ</span>
-                        </div>
-                        <div class="card-actions">
-                            <a class="button button-primary" href="{{ route('appointments.create', ['doctor_id' => $doctor->id]) }}">Đặt lịch</a>
-                            <a class="button button-secondary" href="{{ route('doctors.show', $doctor) }}">Chi tiết</a>
-                        </div>
-                        <div class="doctor-hover-panel" aria-hidden="true">
-                            <span>Bác sĩ</span>
-                            <strong>{{ $doctor->name }}</strong>
-                            <p>Chuyên môn: {{ $doctor->specialization ?: 'Đang cập nhật' }}</p>
-                            <p>Học vị: {{ $doctor->degree ?: 'Đang cập nhật' }}</p>
+                            <div class="card-actions">
+                                <a class="button button-primary" href="{{ route('appointments.create', ['doctor_id' => $doctor->id]) }}">Đặt lịch</a>
+                                <a class="button button-secondary" href="{{ route('doctors.show', $doctor) }}">Chi tiết</a>
+                            </div>
                         </div>
                     </article>
                 @empty
